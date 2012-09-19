@@ -13,6 +13,11 @@ class Wip
 
   def initialize(wip_branch)
     @wip_branch = wip_branch
+    @current_branch = current_branch
+  end
+
+  def current_branch
+    `git symbolic-ref --short -q HEAD`.sub("\n",'')
   end
 
   def local_branches
@@ -31,8 +36,16 @@ class Wip
     remote_branches.any? { |remote| remote == @wip_branch }
   end
 
+  def wip_is_current?
+    @wip_branch == @current_branch
+  end
 
   def validate_branches
+    if wip_is_current?
+      puts "Can't WIP to current branch."
+      exit
+    end
+
     if branch_exists_locally?
       puts "Local branch #{@wip_branch} exists!"
       exit
@@ -47,6 +60,7 @@ class Wip
     `git add -u . `
     `git commit -m "WIP"`
     `git push origin #{@wip_branch}` # assumes remote is at origin
+    `git checkout -b #{@current_branch}`
   end
 
   def self.validate_origin_exists
@@ -79,3 +93,5 @@ class Wip
 end
 
 Wip.process(ARGV)
+
+# another change
