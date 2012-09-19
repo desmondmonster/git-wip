@@ -40,10 +40,10 @@ class Wip
 
 
   def validate_branches
-    if branch_exists_locally? @wip_branch
+    if branch_exists_locally?
       puts "Local branch #{@wip_branch} exists!"
       exit
-    elsif branch_exists_remotely? @wip_branch
+    elsif branch_exists_remotely?
       puts "Remote branch #{@wip_branch} exists!"
       exit
     end
@@ -89,3 +89,4 @@ end
 
 Wip.process(ARGV)
 
+### want to make a change
