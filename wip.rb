@@ -4,22 +4,15 @@ class Wip
 
   def self.process(argv)
     validate_input(argv)
+    validate_origin_exists
 
     wip = new(argv.first)
     wip.validate_branches
-    wip.validate_origin_exists
     wip.create_branch_and_push
   end
 
   def initialize(wip_branch)
     @wip_branch = wip_branch
-  end
-
-  def validate_origin_exists
-    if `git remote` == ''
-      puts "no origin configured"
-      exit
-    end
   end
 
   def local_branches
@@ -40,10 +33,10 @@ class Wip
 
 
   def validate_branches
-    if branch_exists_locally? @wip_branch
+    if branch_exists_locally?
       puts "Local branch #{@wip_branch} exists!"
       exit
-    elsif branch_exists_remotely? @wip_branch
+    elsif branch_exists_remotely?
       puts "Remote branch #{@wip_branch} exists!"
       exit
     end
@@ -54,6 +47,14 @@ class Wip
     `git add -u . `
     `git commit -m "WIP"`
     `git push origin #{@wip_branch}` # assumes remote is at origin
+  end
+
+  def self.validate_origin_exists
+    # connection error, etc
+    if `git remote` == ''
+      puts "no origin configured"
+      exit
+    end
   end
 
   def self.validate_input(argv)
@@ -77,15 +78,4 @@ class Wip
   end
 end
 
-def all_branches
-  # =>
-    # hash_finder
-  # * index_finder
-    # master
-    # remotes/origin/HEAD -> origin/master
-    # remotes/origin/index_finder
-    # remotes/origin/master
-end
-
 Wip.process(ARGV)
-
